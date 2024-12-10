@@ -16,13 +16,13 @@ const SMALL_EXAMPLE = `T.........
 ..........`.split('\n');
 
 describe('Year 2024 - Day 8', () => {
-    test('Part 1 - Returns 14', () => {
-        expect(partOne(EXAMPLE_INPUT)).toBe(14);
-    });
-    test('Part 2 - Small Example returns 9', () => {
-        expect(partTwo(SMALL_EXAMPLE)).toBe(9);
-    });
-    test('Part 2 - Example Input returns 34', () => {
-        expect(partTwo(EXAMPLE_INPUT)).toBe(34);
-    });
+  test('Part 1 - Returns 14', () => {
+    expect(partOne(EXAMPLE_INPUT)).toBe(14);
+  });
+  test('Part 2 - Small Example returns 9', () => {
+    expect(partTwo(SMALL_EXAMPLE)).toBe(9);
+  });
+  test('Part 2 - Example Input returns 34', () => {
+    expect(partTwo(EXAMPLE_INPUT)).toBe(34);
+  });
 });
