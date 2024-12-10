@@ -58,7 +58,7 @@ const flattenArray = (blocks: DiskType): string[] => {
 
 export const partOne = (input: InputType): number => {
   const convertedDisk = convertToBlocks(input[0]);
-  const compressedDisk = compressDisk(convertedDisk);
+  const compressedDisk = compressDisk(convertedDisk as string[]);
   return getChecksum(compressedDisk);
 };
 
