@@ -2,17 +2,22 @@ import { readFile, type InputType } from '../../utils/readFile';
 
 export const PUZZLE_INPUT = readFile(__dirname + '/input.txt');
 
-const convertToBlocks = (disk: string): string[] => {
-  let converted: string[] = [];
+type DiskType = Array<string | string[]>;
+
+const convertToBlocks = (disk: string, keepFilesSeparate: boolean = true): DiskType => {
+  let converted: DiskType = [];
   let fileID = 0;
 
   for (let i = 0; i < disk.length; i++) {
     const l = +disk[i];
+    if (l === 0) continue;
     if (i % 2 === 0) {
-      converted.push(...Array.from({ length: l }, (x) => '' + fileID));
+      if (keepFilesSeparate) converted.push(...Array.from({ length: l }, (x) => '' + fileID));
+      else converted.push(Array.from({ length: l }, (x) => '' + fileID));
       fileID++;
     } else {
-      converted.push(...Array.from({ length: l }, (x) => '.'));
+      if (keepFilesSeparate) converted.push(...Array.from({ length: l }, (x) => '.'));
+      else converted.push('.'.repeat(l));
     }
   }
 
@@ -32,8 +37,23 @@ const compressDisk = (disk: string[]): string[] => {
 
 const getChecksum = (disk: string[]): number => {
   return disk.reduce((a, b, i) => {
-    return a + i * +b;
+    if (b !== '.') {
+      return a + i * +b;
+    }
+    return a;
   }, 0);
+};
+
+const flattenArray = (blocks: DiskType): string[] => {
+  return blocks.reduce<string[]>((flat, block) => {
+    if (Array.isArray(block)) {
+      flat = [...flat, ...block];
+    } else {
+      const b = block.startsWith('.') ? block.split('') : block;
+      flat = [...flat, ...b];
+    }
+    return flat;
+  }, []);
 };
 
 export const partOne = (input: InputType): number => {
@@ -43,5 +63,34 @@ export const partOne = (input: InputType): number => {
 };
 
 export const partTwo = (input: InputType): number => {
-  return -1;
+  let blocks = convertToBlocks(input[0], false);
+  let i = blocks.length - 1;
+  while (i >= 0) {
+    const block = blocks[i];
+
+    if (Array.isArray(block)) {
+      // Search for empty space that fits
+      const emptySpace = blocks.find((x) => typeof x === 'string' && x.length >= block.length);
+      if (emptySpace) {
+        const blockIndex = blocks.indexOf(block);
+        const emptySpaceIndex = blocks.indexOf(emptySpace);
+
+        if (emptySpaceIndex < blockIndex) {
+          blocks[emptySpaceIndex] = block;
+          blocks[blockIndex] = '.'.repeat(block.length);
+
+          if (emptySpace.length - block.length > 0)
+            blocks.splice(emptySpaceIndex + 1, 0, '.'.repeat(emptySpace.length - block.length));
+        } else {
+          i--;
+        }
+      } else {
+        i--;
+      }
+    } else {
+      i--;
+    }
+  }
+
+  return getChecksum(flattenArray(blocks));
 };
