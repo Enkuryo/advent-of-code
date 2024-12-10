@@ -1,4 +1,3 @@
-import { SHA512_256 } from 'bun';
 import { readFile, type InputType } from '../../utils/readFile';
 
 export const PUZZLE_INPUT = readFile(__dirname + '/input.txt');
