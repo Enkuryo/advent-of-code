@@ -3,7 +3,8 @@
   "module": "./src/index.ts",
   "type": "module",
   "scripts": {
-    "start": "bun run ./src/index"
+    "start": "bun run ./src/index",
+    "create-challenge": "bun run ./src/utils/createChallenge.ts"
   },
   "devDependencies": {
     "@types/bun": "latest"
