@@ -1,3 +1,4 @@
+import useMemo from '../../hooks/useMemo';
 import { readFile, type InputType } from '../../utils/readFile';
 
 export const PUZZLE_INPUT = readFile(__dirname + '/input.txt');
@@ -23,22 +24,6 @@ export const partOne = (input: InputType): number => {
   return stones.length;
 };
 
-// Oh boy, my head is hurting, this is some magic
-const cache = (f: (stone: number, steps: number) => number) => {
-  const cacheMap: { [key: string]: number } = {};
-
-  const cachedFunction = (stone: number, steps: number): number => {
-    const key = `${stone}_${steps}`;
-
-    if (!cacheMap[key]) {
-      cacheMap[key] = f(stone, steps);
-    }
-    return cacheMap[key];
-  };
-
-  return cachedFunction;
-};
-
 const blinkButBetter = (stone: number, steps: number): number => {
   if (steps === 0) return 1;
 
@@ -54,7 +39,7 @@ const blinkButBetter = (stone: number, steps: number): number => {
   return cachedBlink(stone * 2024, steps - 1);
 };
 
-const cachedBlink = cache(blinkButBetter);
+const cachedBlink = useMemo<number>(blinkButBetter);
 
 export const partTwo = (input: InputType): number => {
   let stones = input[0].split(' ');
