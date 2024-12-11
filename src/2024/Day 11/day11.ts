@@ -23,6 +23,46 @@ export const partOne = (input: InputType): number => {
   return stones.length;
 };
 
+// Oh boy, my head is hurting, this is some magic
+const cache = (f: (stone: number, steps: number) => number) => {
+  const cacheMap: { [key: string]: number } = {};
+
+  const cachedFunction = (stone: number, steps: number): number => {
+    const key = `${stone}_${steps}`;
+
+    if (!cacheMap[key]) {
+      cacheMap[key] = f(stone, steps);
+    }
+    return cacheMap[key];
+  };
+
+  return cachedFunction;
+};
+
+const blinkButBetter = (stone: number, steps: number): number => {
+  if (steps === 0) return 1;
+
+  if (stone === 0) return cachedBlink(1, steps - 1);
+
+  const length = stone.toString().length;
+  if (length % 2 === 0) {
+    const left = +`${stone}`.slice(0, length / 2);
+    const right = +`${stone}`.slice(length / 2);
+    return cachedBlink(left, steps - 1) + cachedBlink(right, steps - 1);
+  }
+
+  return cachedBlink(stone * 2024, steps - 1);
+};
+
+const cachedBlink = cache(blinkButBetter);
+
 export const partTwo = (input: InputType): number => {
-  return -1;
+  let stones = input[0].split(' ');
+  let result = 0;
+
+  for (let stone of stones) {
+    result += cachedBlink(+stone, 75);
+  }
+
+  return result;
 };
