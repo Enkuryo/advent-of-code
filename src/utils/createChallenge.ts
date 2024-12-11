@@ -12,32 +12,30 @@ if (args.length !== 4) {
 
   const challengeContent = `import { readFile, type InputType } from '../../utils/readFile';
 
-  export const PUZZLE_INPUT = readFile(__dirname + '/input.txt');
+export const PUZZLE_INPUT = readFile(__dirname + '/input.txt');
+ 
+export const partOne = (input: InputType): number => {
+  return -1;
+};
   
-  export const partOne = (input: InputType): number => {
-    return -1;
-  };
-  
-  export const partTwo = (input: InputType): number => {
-    return -1;
-  };
-  `;
+export const partTwo = (input: InputType): number => {
+  return -1;
+};`;
 
   const testContent = `import { describe, test, expect } from 'bun:test';
-  import { readFile } from '../../utils/readFile';
-  import { partOne, partTwo } from './day${day}';
-  
-  const EXAMPLE_INPUT = readFile(__dirname + '/example.txt');
-  
-  describe('Year 2024 - Day ${day}', () => {
-    test('Part 1 - Example Input returns 1', () => {
-      expect(partOne(EXAMPLE_INPUT)).toBe(1);
-    });
-    test('Part 2 - Example Input returns 1', () => {
-      expect(partTwo(EXAMPLE_INPUT)).toBe(1);
-    });
+import { readFile } from '../../utils/readFile';
+import { partOne, partTwo } from './day${day}';
+
+const EXAMPLE_INPUT = readFile(__dirname + '/example.txt');
+
+describe('Year 2024 - Day ${day}', () => {
+  test('Part 1 - Example Input returns 1', () => {
+    expect(partOne(EXAMPLE_INPUT)).toBe(1);
   });
-  `;
+  test('Part 2 - Example Input returns 1', () => {
+    expect(partTwo(EXAMPLE_INPUT)).toBe(1);
+  });
+});`;
 
   const path = __dirname + `/../${year}/Day ${day}/`;
 
