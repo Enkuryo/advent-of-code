@@ -32,6 +32,16 @@ export default class Point {
     return this;
   }
 
+  addDirections(y: number, x: number): Point {
+    this._y += y;
+    this._x += x;
+    return this;
+  }
+
+  static addDirectionToPointString(point: string, y: number, x: number): string {
+    return Point.fromString(point).addDirections(y, x).toString();
+  }
+
   static fromString(point: string): Point {
     const p = point.split('|').map((n) => +n);
     return new Point(p[0], p[1]);
