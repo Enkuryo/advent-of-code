@@ -1,36 +1,13 @@
-import { isBreakStatement, updateLanguageServiceSourceFile } from 'typescript';
 import Point from '../../lib/Point';
 import { readFile, type InputType } from '../../utils/readFile';
 
 export const PUZZLE_INPUT = readFile(__dirname + '/input.txt');
-
-/***
- * IDEA:
- * Go through each point
- * - Check if we already have visited that point
- * - If yes, skip it
- * - If no, try to fill the field and get all points belonging to that field
- */
 
 type Map = Array<Array<string>>;
 
 type Region = {
   fieldType: string;
   points: string[];
-};
-
-enum Direction {
-  UP = 0,
-  RIGHT = 1,
-  DOWN = 2,
-  LEFT = 3,
-}
-
-type RegionPointDataType = {
-  up: number | undefined;
-  right: number | undefined;
-  down: number | undefined;
-  left: number | undefined;
 };
 
 const DIRECTIONS = [
@@ -40,33 +17,12 @@ const DIRECTIONS = [
   { y: 0, x: -1 }, // LEFT
 ];
 
-const printMap = (map: Map): void => {
-  console.log(map.map((line) => line.join('')).join('\n'));
-};
-
-const printMapRegionHighlight = (map: Map, region: Region): void => {
-  const highlightedMap: Map = [];
-
-  for (let y = 0; y < map.length; y++) {
-    if (!highlightedMap[y]) highlightedMap[y] = [];
-
-    for (let x = 0; x < map[y].length; x++) {
-      highlightedMap[y].push(isPointInRegion(new Point(y, x).toString(), region) ? region.fieldType : '.');
-    }
-  }
-
-  printMap(highlightedMap);
-};
-
 const inBounds = (point: Point, map: Map): boolean => {
   const [x, y] = [point.getX(), point.getY()];
   return y >= 0 && y < map.length && x >= 0 && x < map[y].length;
 };
 
 const getRegionPerimeter = (region: Region): number => {
-  // Go through each point in the region, counting the neighbors.
-  // 4 - n is the fences around that point, where n is the amount of neighbors
-
   let perimeter = 0;
 
   for (let point of region.points) {
@@ -167,8 +123,6 @@ const getRegionBorders = (region: Region, map: Map): number => {
 };
 
 const walkField = (map: Map, startPosition: Point, visitedPoints: Set<string>, region: Region): Region => {
-  const fieldType = map[startPosition.getY()][startPosition.getX()];
-
   // Adding the current point to the visited point list
   visitedPoints.add(startPosition.toString());
 
