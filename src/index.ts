@@ -21,6 +21,8 @@ const puzzleInput = readFile(__dirname + `/${year}/Day ${day}/input.txt`);
 
 console.log(`Solution for Part ${part} of Day ${day} ${year}:`);
 
+const start = performance.now();
+
 if (part === 1) {
   if (solution.partOne) console.log(solution.partOne(puzzleInput));
   else console.error('No partOne() found for day ' + day);
@@ -29,3 +31,7 @@ if (part === 2) {
   if (solution.partTwo) console.log(solution.partTwo(puzzleInput));
   else console.error('No partTwo() found for day ' + day);
 }
+
+const end = performance.now();
+
+console.info(`~~ Solving took: ${(end - start).toFixed(4)} ms`);
