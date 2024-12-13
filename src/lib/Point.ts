@@ -9,7 +9,7 @@ export default class Point {
   _x: number;
   _y: number;
 
-  constructor(y: number, x: number) {
+  constructor(y: number = 0, x: number = 0) {
     this._y = y;
     this._x = x;
   }
@@ -38,7 +38,11 @@ export default class Point {
     return this;
   }
 
-  static addDirectionToPointString(point: string, y: number, x: number): string {
+  static addDirectionToPointString(
+    point: string,
+    y: number,
+    x: number
+  ): string {
     return Point.fromString(point).addDirections(y, x).toString();
   }
 
