@@ -73,34 +73,31 @@ const getCheapestCost = (
    * We can use the first to calculate tb and then use the either of the second to get ta.
    *
    * So off we go!
+   *
+   * Oh, one thing! We need to make sure that ax != 0, ay != 0, bx != 0 and by != 0
    * */
+
+  if (ax === 0 || ay === 0 || bx === 0 || by === 0) return 0;
 
   const tb = (ay * px - ax * py) / (ay * bx - ax * by);
   const ta = (px - bx * tb) / ax;
   return tb % 1 === 0 && ta % 1 === 0 ? ta * ca + tb * cb : 0;
 };
 
+const getValues = (input: string, offset: number = 0): number[] => {
+  const values = input.match(/X[\+\=](\d+), Y[\+\=](\d+)/);
+  if (!values) return [0, 0];
+  return values.slice(1, 3).map((n) => +n + offset);
+};
+
 export const partOne = (input: InputType): number => {
   let totalCost = 0;
 
   for (let i = 0; i < input.length; i += 4) {
-    const buttonA = input[i]
-      .match(/X\+(\d+), Y\+(\d+)/)
-      ?.slice(1, 3)
-      .map((n) => +n);
-    const buttonB = input[i + 1]
-      .match(/X\+(\d+), Y\+(\d+)/)
-      ?.slice(1, 3)
-      .map((n) => +n);
-    const prize = input[i + 2]
-      .match(/X\=(\d+), Y\=(\d+)/)
-      ?.slice(1, 3)
-      .map((n) => +n);
+    const buttonA = getValues(input[i]);
+    const buttonB = getValues(input[i + 1]);
+    const prize = getValues(input[i + 2]);
 
-    if (!buttonA || !buttonB || !prize) {
-      // Do null check to satisfy typescript
-      continue;
-    }
     totalCost += getCheapestCost(buttonA, buttonB, prize);
   }
 
@@ -111,18 +108,10 @@ export const partTwo = (input: InputType): number => {
   let totalCost = 0;
 
   for (let i = 0; i < input.length; i += 4) {
-    const buttonA = input[i]
-      .match(/X\+(\d+), Y\+(\d+)/)
-      ?.slice(1, 3)
-      .map((n) => +n);
-    const buttonB = input[i + 1]
-      .match(/X\+(\d+), Y\+(\d+)/)
-      ?.slice(1, 3)
-      .map((n) => +n);
-    const prize = input[i + 2]
-      .match(/X\=(\d+), Y\=(\d+)/)
-      ?.slice(1, 3)
-      .map((n) => +n + 10000000000000); // Add some really big number to annoy the once who want to bruteforce
+    const buttonA = getValues(input[i]);
+    const buttonB = getValues(input[i + 1]);
+    // Add some really big number to annoy anyone who wants to bruteforce this solution
+    const prize = getValues(input[i + 2], 10000000000000);
 
     if (!buttonA || !buttonB || !prize) {
       // Do null check to satisfy typescript
