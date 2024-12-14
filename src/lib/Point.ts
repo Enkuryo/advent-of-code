@@ -6,43 +6,39 @@ export type PointType = {
 };
 
 export default class Point {
-  _x: number;
-  _y: number;
+  #x: number;
+  #y: number;
 
   constructor(y: number = 0, x: number = 0) {
-    this._y = y;
-    this._x = x;
+    this.#y = y;
+    this.#x = x;
   }
 
   getX(): number {
-    return this._x;
+    return this.#x;
   }
 
   getY(): number {
-    return this._y;
+    return this.#y;
   }
 
   toString(): string {
-    return `${this._y}|${this._x}`;
+    return `${this.#y}|${this.#x}`;
   }
 
   add(point: Point): Point {
-    this._y += point.getY();
-    this._x += point.getX();
+    this.#y += point.getY();
+    this.#x += point.getX();
     return this;
   }
 
   addDirections(y: number, x: number): Point {
-    this._y += y;
-    this._x += x;
+    this.#y += y;
+    this.#x += x;
     return this;
   }
 
-  static addDirectionToPointString(
-    point: string,
-    y: number,
-    x: number
-  ): string {
+  static addDirectionToPointString(point: string, y: number, x: number): string {
     return Point.fromString(point).addDirections(y, x).toString();
   }
 
