@@ -50,6 +50,10 @@ export default class Point {
     return Point.fromString(point).addDirections(y, x).toString();
   }
 
+  static addTwoPoints(a: Point, b: Point): Point {
+    return new Point(a.getY() + b.getY(), a.getX() + b.getX());
+  }
+
   static fromString(point: string): Point {
     const p = point.split('|').map((n) => +n);
     return new Point(p[0], p[1]);
