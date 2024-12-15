@@ -74,18 +74,26 @@ const mapInputToRobotArray = (input: InputType): Robot[] => {
   });
 };
 
-const printMap = (map: Array<Array<number>>, quadrants: Quadrant[]): void => {
+const printMap = (
+  map: Array<Array<number>>,
+  quadrants: Quadrant[] | null = null,
+  showNumbers: boolean = true
+): void => {
   const mapWithBorders: Array<Array<string>> = JSON.parse(JSON.stringify(map));
 
   for (let y = 0; y < mapWithBorders.length; y++) {
     for (let x = 0; x < mapWithBorders[y].length; x++) {
-      if (!isInQuadrant(y, x, quadrants)) {
-        mapWithBorders[y][x] = ' ';
+      if (quadrants) {
+        if (!isInQuadrant(y, x, quadrants)) {
+          mapWithBorders[y][x] = ' ';
+        }
       }
     }
   }
 
-  console.log(mapWithBorders.map((line) => line.map((l) => (l == '0' ? '.' : l)).join('')).join('\n'));
+  console.log(
+    mapWithBorders.map((line) => line.map((l) => (l == '0' ? '.' : showNumbers ? l : '#')).join('')).join('\n')
+  );
 };
 
 export const partOne = (input: InputType, width: number = 101, height: number = 103): number => {
@@ -102,8 +110,8 @@ export const partOne = (input: InputType, width: number = 101, height: number = 
     const vx = robot.velocity.getX();
     const vy = robot.velocity.getY();
 
-    const npy = (py + vy * 100) % height;
-    const npx = (px + vx * 100) % width;
+    const npy = (py + vy) % height;
+    const npx = (px + vx) % width;
 
     const epy = npy < 0 ? height + npy : npy;
     const epx = npx < 0 ? width + npx : npx;
@@ -126,6 +134,63 @@ export const partOne = (input: InputType, width: number = 101, height: number = 
   return safetyFactor;
 };
 
-export const partTwo = (input: InputType): number => {
-  return -1;
+export const partTwo = (input: InputType, width: number = 101, height: number = 103): number => {
+  const robots: Robot[] = mapInputToRobotArray(input);
+  const quadrants: Quadrant[] = createQuadrants(width, height);
+
+  let safetyFactor: number = 1;
+
+  let stepCount: number = 0;
+
+  const move = () => {
+    const map = Array.from({ length: height }, (y) => Array.from({ length: width }, (x) => 0));
+
+    for (let robot of robots) {
+      const px = robot.position.getX();
+      const py = robot.position.getY();
+      const vx = robot.velocity.getX();
+      const vy = robot.velocity.getY();
+
+      const npy = (py + vy) % height;
+      const npx = (px + vx) % width;
+
+      const epy = npy < 0 ? height + npy : npy;
+      const epx = npx < 0 ? width + npx : npx;
+
+      robot.position.setX(epx);
+      robot.position.setY(epy);
+
+      map[epy][epx]++;
+    }
+
+    for (let q of quadrants) {
+      let numberOfRobots: number = 0;
+
+      for (let y = q.y1; y <= q.y2; y++) {
+        for (let x = q.x1; x <= q.x2; x++) {
+          numberOfRobots += map[y][x];
+        }
+      }
+
+      safetyFactor *= numberOfRobots;
+    }
+
+    stepCount++;
+
+    if (
+      map
+        .map((line) => line.map((c) => (c === 0 ? '.' : '#')).join(''))
+        .join('\n')
+        .indexOf('########') > -1
+    ) {
+      console.clear();
+      printMap(map, null, false);
+    } else {
+      move();
+    }
+  };
+
+  move();
+
+  return stepCount;
 };
