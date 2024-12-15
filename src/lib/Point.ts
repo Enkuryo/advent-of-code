@@ -18,8 +18,16 @@ export default class Point {
     return this.#x;
   }
 
+  setX(value: number): void {
+    this.#x = value;
+  }
+
   getY(): number {
     return this.#y;
+  }
+
+  setY(value: number): void {
+    this.#y = value;
   }
 
   toString(): string {
