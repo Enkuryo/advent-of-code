@@ -110,8 +110,8 @@ export const partOne = (input: InputType, width: number = 101, height: number = 
     const vx = robot.velocity.getX();
     const vy = robot.velocity.getY();
 
-    const npy = (py + vy) % height;
-    const npx = (px + vx) % width;
+    const npy = (py + vy * 100) % height;
+    const npx = (px + vx * 100) % width;
 
     const epy = npy < 0 ? height + npy : npy;
     const epx = npx < 0 ? width + npx : npx;
