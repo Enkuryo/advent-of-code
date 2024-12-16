@@ -30,6 +30,11 @@ export default class Point {
     this.#y = value;
   }
 
+  setPoint(y: number, x: number): void {
+    this.#y = y;
+    this.#x = x;
+  }
+
   toString(): string {
     return `${this.#y}|${this.#x}`;
   }
@@ -48,6 +53,10 @@ export default class Point {
 
   static addDirectionToPointString(point: string, y: number, x: number): string {
     return Point.fromString(point).addDirections(y, x).toString();
+  }
+
+  static addPointToPointString(a: string, b: Point): string {
+    return Point.addTwoPoints(Point.fromString(a), b).toString();
   }
 
   static addTwoPoints(a: Point, b: Point): Point {
