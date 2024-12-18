@@ -2,91 +2,192 @@ import { readFile, type InputType } from '../../utils/readFile';
 
 export const PUZZLE_INPUT = readFile(__dirname + '/input.txt');
 
-let registerA: number = 0;
-let registerB: number = 0;
-let registerC: number = 0;
-let programm: number[] = [];
-let result: number[] = [];
+class Computer {
+  #registerA: number;
+  #registerB: number;
+  #registerC: number;
+  #program: number[];
+  #result: number[];
+  #programCounter: number;
 
-const getValueOfComboOperand = (operand: number): number => {
-  switch (operand) {
-    case 1:
-    case 2:
-    case 3:
-      return operand;
-    case 4:
-      return registerA;
-    case 5:
-      return registerB;
-    case 6:
-      return registerC;
+  constructor() {
+    this.#registerA = 0;
+    this.#registerB = 0;
+    this.#registerC = 0;
+    this.#program = [];
+    this.#result = [];
+    this.#programCounter = 0;
   }
-  return -1;
-};
 
-export const partOne = (input: InputType): string => {
-  for (let line of input) {
-    if (line === '') continue;
-    const [key, value] = line.split(': ');
-
-    if (key.endsWith('A')) {
-      registerA = +value;
-    } else if (key.endsWith('B')) {
-      registerB = +value;
-    } else if (key.endsWith('C')) {
-      registerC = +value;
-    } else {
-      programm = value.split(',').map((n) => +n);
+  static fromInputString(input: InputType): Computer {
+    const c = new Computer();
+    for (let line of input) {
+      const [key, value] = line.split(': ');
+      switch (key) {
+        case 'Register A':
+          c.setRegisterA(+value);
+          break;
+        case 'Register B':
+          c.setRegisterB(+value);
+          break;
+        case 'Register C':
+          c.setRegisterC(+value);
+          break;
+        case 'Program':
+          c.setProgram(value.split(',').map((n) => +n));
+          break;
+      }
     }
+    return c;
   }
 
-  for (let i = 0; i < programm.length; ) {
-    const opcode = programm[i];
-    const operand = programm[i + 1];
+  run(runUntilEndOfProgram: boolean = false): Computer {
+    const opcode = this.#program[this.#programCounter];
+    const operand = this.#program[this.#programCounter + 1];
 
     switch (opcode) {
-      case 0: // adv
-        registerA = Math.floor(
-          registerA / Math.pow(2, getValueOfComboOperand(operand))
-        );
+      case 0:
+        this.#adv(operand);
         break;
-      case 1: // bxl
-        registerB = registerB ^ operand;
+      case 1:
+        this.#bxl(operand);
         break;
-      case 2: // bst
-        registerB = getValueOfComboOperand(operand) % 8;
+      case 2:
+        this.#bst(operand);
         break;
-      case 3: // jnz
-        if (registerA !== 0) {
-          i = operand;
-        } else {
-          i += 2;
-        }
+      case 3:
+        this.#jnz(operand);
         break;
-      case 4: // bxc
-        registerB = registerB ^ registerC;
+      case 4:
+        this.#bxc();
         break;
-      case 5: // out
-        result.push(getValueOfComboOperand(operand) % 8);
+      case 5:
+        this.#out(operand);
         break;
-      case 6: // bdv
-        registerB = Math.floor(
-          registerA / Math.pow(2, getValueOfComboOperand(operand))
-        );
+      case 6:
+        this.#bdv(operand);
         break;
-      case 7: // cdv
-        registerC = Math.floor(
-          registerA / Math.pow(2, getValueOfComboOperand(operand))
-        );
+      case 7:
+        this.#cdv(operand);
         break;
     }
 
-    if (opcode !== 3) {
-      i += 2;
+    if (runUntilEndOfProgram && !this.endOfProgram()) {
+      this.run(runUntilEndOfProgram);
+    }
+
+    return this;
+  }
+
+  endOfProgram(): boolean {
+    return this.#programCounter >= this.#program.length;
+  }
+
+  #next(): void {
+    this.#programCounter += 2;
+  }
+
+  #getValueOfCombo(combo: number): number {
+    switch (combo) {
+      case 4:
+        return this.#registerA;
+      case 5:
+        return this.#registerB;
+      case 6:
+        return this.#registerC;
+    }
+    return combo;
+  }
+
+  #adv(combo: number): void {
+    this.#registerA = Math.floor(
+      this.#registerA / Math.pow(2, this.#getValueOfCombo(combo))
+    );
+    this.#next();
+  }
+
+  #bxl(literal: number): void {
+    this.#registerB = (this.#registerB ^ literal) >>> 0;
+    this.#next();
+  }
+
+  #bst(combo: number): void {
+    this.#registerB = this.#getValueOfCombo(combo) % 8;
+    this.#next();
+  }
+
+  #jnz(literal: number): void {
+    this.#next();
+    if (this.#registerA !== 0) {
+      this.#programCounter = literal;
     }
   }
 
-  return result.join(',');
+  #bxc(): void {
+    this.#registerB = (this.#registerB ^ this.#registerC) >>> 0;
+    this.#next();
+  }
+
+  #out(combo: number): void {
+    this.#result.push(this.#getValueOfCombo(combo) % 8 >>> 0);
+    this.#next();
+  }
+
+  #bdv(combo: number): void {
+    this.#registerB = Math.floor(
+      this.#registerA / Math.pow(2, this.#getValueOfCombo(combo))
+    );
+    this.#next();
+  }
+
+  #cdv(combo: number): void {
+    this.#registerC = Math.floor(
+      this.#registerA / Math.pow(2, this.#getValueOfCombo(combo))
+    );
+    this.#next();
+  }
+
+  setRegisterA(value: number): Computer {
+    this.#registerA = value;
+    return this;
+  }
+
+  setRegisterB(value: number): Computer {
+    this.#registerB = value;
+    return this;
+  }
+
+  setRegisterC(value: number): Computer {
+    this.#registerC = value;
+    return this;
+  }
+
+  setProgram(value: number[]): Computer {
+    this.#program = value;
+    return this;
+  }
+
+  getInfo(includeProgram: boolean = false): void {
+    const regA = `Register A: ${this.#registerA}\n`;
+    const regB = `Register B: ${this.#registerB}\n`;
+    const regC = `Register C: ${this.#registerC}\n`;
+    const prog = `\nProgram: ${this.#program.join(',')}\n`;
+    const res = `\nResult: ${this.#result.join(',')}\n`;
+
+    console.log(`${regA}${regB}${regC}${includeProgram ? prog : ''}${res}`);
+  }
+
+  getResult(): string {
+    return this.#result.join(',');
+  }
+}
+
+export const partOne = (input: InputType): string => {
+  const computer = Computer.fromInputString(input);
+
+  computer.run(true);
+
+  return computer.getResult();
 };
 
 export const partTwo = (input: InputType): number => {
