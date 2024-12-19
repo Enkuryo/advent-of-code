@@ -8,10 +8,10 @@ const useMemo = <T = any>(f: (...params: any) => T) => {
   const cacheMap: { [key: string]: T } = {};
 
   const cachedFunction = (...params: any): T => {
-    const key = params.join('_');
-
-    if (!cacheMap[key]) {
+    const key = params.map((p: any) => (typeof p === 'object' ? Array.from(p).join(',') : p)).join('_');
+    if (Object.keys(cacheMap).indexOf(key) === -1) {
       cacheMap[key] = f(...params);
+    } else {
     }
     return cacheMap[key];
   };
