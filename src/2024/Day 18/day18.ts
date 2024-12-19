@@ -127,7 +127,7 @@ class AStar {
           neighbor.parent = currentNode;
           neighbor.g = gNeighbor;
           neighbor.f = neighbor.g + neighbor.h;
-          neighbor.debug = `F: ${neighbor.f}, G: ${neighbor.g}, H: ${neighbor.H}`;
+          neighbor.debug = `F: ${neighbor.f}, G: ${neighbor.g}, H: ${neighbor.h}`;
         }
       }
     }
