@@ -8,7 +8,7 @@ describe('Year 2024 - Day 19', () => {
   test('Part 1 - Example Input returns 6', () => {
     expect(partOne(EXAMPLE_INPUT)).toBe(6);
   });
-  /*test('Part 2 - Example Input returns 1', () => {
-    expect(partTwo(EXAMPLE_INPUT)).toBe(1);
-  });*/
+  test('Part 2 - Example Input returns 16', () => {
+    expect(partTwo(EXAMPLE_INPUT)).toBe(16);
+  });
 });
