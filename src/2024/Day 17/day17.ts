@@ -27,13 +27,13 @@ class Computer {
       const [key, value] = line.split(': ');
       switch (key) {
         case 'Register A':
-          c.setRegisterA(+value);
+          c.setRegisterA(BigInt(value));
           break;
         case 'Register B':
-          c.setRegisterB(+value);
+          c.setRegisterB(BigInt(value));
           break;
         case 'Register C':
-          c.setRegisterC(+value);
+          c.setRegisterC(BigInt(value));
           break;
         case 'Program':
           c.setProgram(value.split(',').map((n) => +n));
@@ -220,31 +220,19 @@ export const partTwo = (input: InputType): string => {
 
     const target = computer.getProgram(counter).join(',');
 
-    console.clear();
-    console.log('Overall program is', computer.getProgram().join(','));
-    console.log('Looking for', target);
     for (let i = 0; i < 8; i++) {
       const input = (offset << 3n) + BigInt(i);
 
-      console.log('Trying with input', input);
       computer.reset();
       computer.setRegisterA(BigInt(input));
-      computer.getInfo();
-
       computer.run(true);
-      computer.getInfo();
-      console.log('Result:', computer.getResult(), target === computer.getResult() ? '<-- MATCH' : '', '\n');
-
       if (target === computer.getResult()) {
         if (counter == 0) {
           return `` + input;
         }
-
         offsets.push([input, counter - 1]);
       }
     }
-    console.log('Now we check', offsets);
-    prompt();
   }
 
   return 'No solution found :(';
