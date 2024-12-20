@@ -51,7 +51,26 @@ export default class Point {
     return this;
   }
 
-  static addDirectionToPointString(point: string, y: number, x: number): string {
+  equalsPoint(point: Point): boolean {
+    return this.#x === point.getX() && this.#y === point.getY();
+  }
+
+  equals(y: number, x: number): boolean {
+    return this.equalsPoint(new Point(y, x));
+  }
+
+  getDistanceTo(point: Point | string): number {
+    if (typeof point === 'string') {
+      point = Point.fromString(point);
+    }
+    return Math.abs(this.#x - point.getX()) + Math.abs(this.#y - point.getY());
+  }
+
+  static addDirectionToPointString(
+    point: string,
+    y: number,
+    x: number
+  ): string {
     return Point.fromString(point).addDirections(y, x).toString();
   }
 
@@ -61,6 +80,12 @@ export default class Point {
 
   static addTwoPoints(a: Point, b: Point): Point {
     return new Point(a.getY() + b.getY(), a.getX() + b.getX());
+  }
+
+  static getDistanceBetween(a: Point | string, b: Point | string): number {
+    a = typeof a === 'string' ? Point.fromString(a) : a;
+    b = typeof b === 'string' ? Point.fromString(b) : b;
+    return Math.abs(a.getX() - b.getX()) + Math.abs(a.getY() - b.getY());
   }
 
   static fromString(point: string): Point {
