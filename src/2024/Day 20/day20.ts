@@ -17,13 +17,7 @@ const findInMap = (map: MapType, needle: string): Point => {
   return new Point();
 };
 
-const parseMap = (
-  map: MapType
-): {
-  start: Point;
-  distances: DistanceMapType;
-  maxDistance: number;
-} => {
+const parseMap = (map: MapType): DistanceMapType => {
   let distances: DistanceMapType = {};
   let start: Point = findInMap(map, 'S');
   let end: Point = findInMap(map, 'E');
@@ -56,39 +50,7 @@ const parseMap = (
     }
   }
 
-  return {
-    start,
-    distances,
-    maxDistance: Math.max(...Object.keys(distances).map((n) => +n)),
-  };
-};
-
-const getTimeSavedWithShortcut = (
-  map: MapType,
-  distances: DistanceMapType,
-  position: Point,
-  direction: Point
-): number => {
-  // Check if point in directio is '#' and point in 2 * direction is '.'
-  const nPos = Point.addTwoPoints(position, direction);
-
-  if (map[nPos.getY()] && map[nPos.getY()][nPos.getX()] === '#') {
-    const nnPos = Point.addTwoPoints(nPos, direction);
-    if (
-      map[nnPos.getY()] &&
-      (map[nnPos.getY()][nnPos.getX()] === '.' ||
-        map[nnPos.getY()][nnPos.getX()] === 'E')
-    ) {
-      const timeAtPosition = distances[position.toString()];
-      const timeAtShortcut = distances[nnPos.toString()];
-      const diff = timeAtShortcut - timeAtPosition - 2;
-      if (diff > 0) {
-        return diff;
-      }
-    }
-  }
-
-  return 0;
+  return distances;
 };
 
 const getShortcuts = (
@@ -97,7 +59,12 @@ const getShortcuts = (
   minTimeToSave: number
 ): number => {
   let possibleShortcuts: number = 0;
-  const positionsOnPath = Object.values(path);
+  const positionsOnPath: { [key: string]: number } = {};
+
+  for (let i = 0; i < Object.values(path).length; i++) {
+    const pos = Object.values(path)[i];
+    positionsOnPath[pos] = i;
+  }
 
   for (let p in path) {
     const position = path[p];
@@ -109,12 +76,10 @@ const getShortcuts = (
           position,
           new Point(y, x)
         );
-        if (positionsOnPath.indexOf(pointToTest) > -1) {
+        if (positionsOnPath[pointToTest]) {
           const distance = Point.getDistanceBetween(position, pointToTest);
-          const valueAtTarget = positionsOnPath.indexOf(pointToTest);
+          const valueAtTarget = positionsOnPath[pointToTest];
           const saving = valueAtTarget - +p - distance;
-
-          const validShortcut = distance < valueAtTarget;
 
           if (distance <= cheatTime && saving >= minTimeToSave) {
             possibleShortcuts++;
@@ -133,13 +98,16 @@ export const partOne = (
   minTimeToSave: number = 100
 ): number => {
   const map = input.map((line) => line.split(''));
-  const { start, distances, maxDistance } = parseMap(map);
+  const distances = parseMap(map);
   return getShortcuts(distances, cheatTime, minTimeToSave);
 };
 
-export const partTwo = (input: InputType): number => {
+export const partTwo = (
+  input: InputType,
+  cheatTime: number = 20,
+  minTimeToSave: number = 100
+): number => {
   const map = input.map((line) => line.split(''));
-  const { start, distances, maxDistance } = parseMap(map);
-
-  return 0;
+  const distances = parseMap(map);
+  return getShortcuts(distances, cheatTime, minTimeToSave);
 };
