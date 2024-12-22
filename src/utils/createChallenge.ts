@@ -28,6 +28,8 @@ import { partOne, partTwo } from './day${day}';
 
 const EXAMPLE_INPUT = readFile(__dirname + '/example.txt');
 
+console.clear();
+
 describe('Year 2024 - Day ${day}', () => {
   test('Part 1 - Example Input returns 1', () => {
     expect(partOne(EXAMPLE_INPUT)).toBe(1);
