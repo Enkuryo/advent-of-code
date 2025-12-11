@@ -8,3 +8,16 @@ fff: out
 ggg: out
 hhh: ccc fff iii
 iii: out
+svr: aaa2 bbb2
+aaa2: fft
+fft: ccc2
+bbb2: tty
+tty: ccc2
+ccc2: ddd2 eee2
+ddd2: hub
+hub: fff2
+eee2: dac
+dac: fff2
+fff2: ggg2 hhh2
+ggg2: out
+hhh2: out
