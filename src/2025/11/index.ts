@@ -57,6 +57,63 @@ export default class Challenge extends BaseChallenge {
   }
 
   override partTwo(): number {
-    throw new Error('Method not implemented.');
+    const input = this.getPuzzleInput().reduce<{
+      [key: string]: string[];
+    }>((connections, current) => {
+      let [key, to] = current.split(': ');
+      connections[key!] = to!.split(' ');
+      return connections;
+    }, {});
+
+    const memo = new Map<string, number>();
+
+    const countPaths = (
+      hop: string,
+      hasFFT: boolean,
+      hasDAC: boolean,
+      visited: Set<string>
+    ): number => {
+      // Update flags
+      if (hop === 'fft') {
+        hasFFT = true;
+      }
+      if (hop === 'dac') {
+        hasDAC = true;
+      }
+
+      // Create memoization key
+      const memoKey = `${hop}:${hasFFT}:${hasDAC}`;
+      if (memo.has(memoKey)) {
+        return memo.get(memoKey)!;
+      }
+
+      // Detect cycles
+      if (visited.has(hop)) {
+        return 0;
+      }
+
+      const nextHops = input[hop];
+
+      let pathCount = 0;
+      const newVisited = new Set(visited);
+      newVisited.add(hop);
+
+      for (let nextHop of nextHops!) {
+        if (nextHop === 'out') {
+          // Found a path to 'out'
+          if (hasFFT && hasDAC) {
+            pathCount += 1;
+          }
+        } else {
+          // Continue recursion
+          pathCount += countPaths(nextHop, hasFFT, hasDAC, newVisited);
+        }
+      }
+
+      memo.set(memoKey, pathCount);
+      return pathCount;
+    };
+
+    return countPaths('svr', false, false, new Set());
   }
 }
