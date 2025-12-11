@@ -19,13 +19,23 @@ export default abstract class BaseChallenge {
       // Load the example file - if exists
       const exampleFilePath = path.join(this.getPath(), 'example.txt');
       if (fs.existsSync(exampleFilePath)) {
-        this.#input = fs.readFileSync(exampleFilePath, { encoding: 'utf8', flag: 'r' }).split(/\r?\n/) ?? [];
+        this.#input =
+          fs
+            .readFileSync(exampleFilePath, { encoding: 'utf8', flag: 'r' })
+            .split(/\r?\n/) ?? [];
+      } else {
+        throw new Error('Tried to load example.txt but file does not exists!');
       }
     } else {
       // Load the input file - if exists
       const inputFilePath = path.join(this.getPath(), 'input.txt');
       if (fs.existsSync(inputFilePath)) {
-        this.#input = fs.readFileSync(inputFilePath, { encoding: 'utf8', flag: 'r' }).split(/\r?\n/) ?? [];
+        this.#input =
+          fs
+            .readFileSync(inputFilePath, { encoding: 'utf8', flag: 'r' })
+            .split(/\r?\n/) ?? [];
+      } else {
+        throw new Error('Tried to load input.txt but file does not exists!');
       }
     }
   }
